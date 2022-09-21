@@ -11,7 +11,6 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using Mono.Cecil;
-using NLog.Fluent;
 
 namespace InheritDocLib
 {
