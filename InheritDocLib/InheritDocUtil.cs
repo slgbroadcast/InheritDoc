@@ -82,28 +82,28 @@ namespace InheritDocLib
 
 
                 // Format XML files
-                foreach (var fileFullPath in FileFullPaths)
-                {
-                    logger?.Invoke(LogLevel.Info, $"Format {fileFullPath}");
-
-                    var xmlContent    = File.ReadAllText(fileFullPath);
-                    var parsedElement = XElement.Parse(xmlContent);
-                    var stringBuilder = new StringBuilder();
-
-                    var settings = new XmlWriterSettings
-                    {
-                        OmitXmlDeclaration = true,
-                        Indent             = true,
-                        IndentChars        = "    ",
-                    };
-
-                    using (var xmlWriter = XmlWriter.Create(stringBuilder, settings))
-                    {
-                        parsedElement.Save(xmlWriter);
-                    }
-
-                    File.WriteAllText(fileFullPath, stringBuilder.ToString());
-                }
+                // foreach (var fileFullPath in FileFullPaths)
+                // {
+                //     logger?.Invoke(LogLevel.Info, $"Format {fileFullPath}");
+                //
+                //     var xmlContent    = File.ReadAllText(fileFullPath);
+                //     var parsedElement = XElement.Parse(xmlContent);
+                //     var stringBuilder = new StringBuilder();
+                //
+                //     var settings = new XmlWriterSettings
+                //     {
+                //         OmitXmlDeclaration = true,
+                //         Indent             = true,
+                //         IndentChars        = "    ",
+                //     };
+                //
+                //     using (var xmlWriter = XmlWriter.Create(stringBuilder, settings))
+                //     {
+                //         parsedElement.Save(xmlWriter);
+                //     }
+                //
+                //     File.WriteAllText(fileFullPath, stringBuilder.ToString());
+                // }
 
 
                 return newXmlDocFiles;
@@ -232,7 +232,8 @@ namespace InheritDocLib
             {
                 try
                 {
-                    return XDocument.Load(streamReader, LoadOptions.PreserveWhitespace);
+                    return XDocument.Load(streamReader);
+                    // return XDocument.Load(streamReader, LoadOptions.PreserveWhitespace);
                 }
                 catch (Exception e)
                 {
