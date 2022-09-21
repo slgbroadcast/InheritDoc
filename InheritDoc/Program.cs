@@ -4,18 +4,19 @@
 
 
 using System;
-
 using CommandLine;
 using NLog;
-
 using InheritDocLib;
 
-namespace InheritDoc {
+namespace InheritDoc
+{
     // Allows using <inheritdoc/> tags in XML comments that copy/extend the comments from base classes and interfaces
-    class Program {
+    class Program
+    {
         static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        static void Main(string[] args) {
+        static void Main(string[] args)
+        {
             // Parse options
             var parserResult = CommandLine.Parser.Default.ParseArguments<Options>(args);
             parserResult.WithNotParsed(errors =>
@@ -26,15 +27,28 @@ namespace InheritDoc {
                         Console.WriteLine($"Invalid command line: {error.Tag}");
                 }
             });
-
+            
+            
             parserResult.WithParsed(options =>
             {
-                InheritDocUtil.Run(options.BasePath, options.XmlDocFileNamePatterns, options.GlobalSourceXmlFiles, options.ExcludeTypes, overwriteExisting: options.OverwriteExisting, logger: Logger);
+                InheritDocUtil.Run(options.BasePath, options.XmlDocFileNamePatterns, options.GlobalSourceXmlFiles, options.ExcludeTypes, overwriteExisting: options.OverwriteExisting,
+                    logger: Logger);
             });
+
+            // // ReSharper disable once UseObjectOrCollectionInitializer
+            // Options options = new Options();
+            //
+            // options.BasePath               = @"D:/Development/Projects/RiderProjects/broadcast-suite/Docs.DocGenerator/bin/Debug";
+            // options.XmlDocFileNamePatterns = @"BroadcastSuite.*.xml";
+            // options.OverwriteExisting      = false;
+            //
+            // InheritDocUtil.Run(options.BasePath, options.XmlDocFileNamePatterns, options.GlobalSourceXmlFiles, options.ExcludeTypes, overwriteExisting: options.OverwriteExisting, logger: Logger);
         }
 
-        static void Logger(InheritDocLib.LogLevel logLevel, string message) {
-            switch (logLevel) {
+        static void Logger(InheritDocLib.LogLevel logLevel, string message)
+        {
+            switch (logLevel)
+            {
                 case InheritDocLib.LogLevel.Trace:
                     logger.Trace(message);
                     break;
@@ -54,7 +68,8 @@ namespace InheritDoc {
         }
     }
 
-    public class Options {
+    public class Options
+    {
         [Option('b', "base", Required = false, HelpText = "Base path to look for XML document files (omit for current directory)")]
         public string BasePath { get; set; }
 
@@ -70,5 +85,4 @@ namespace InheritDoc {
         [Option('o', "overwrite", HelpText = "Include to overwrite existing xml files. Omit to create new files with '.new.xml' suffix.")]
         public bool OverwriteExisting { get; set; }
     }
-
 }

@@ -20,7 +20,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(GlobalTool)' != true">
-        <TargetFramework>net45</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(GlobalTool)' == true">
