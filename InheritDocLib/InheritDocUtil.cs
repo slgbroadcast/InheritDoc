@@ -11,6 +11,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using Mono.Cecil;
+using NLog.Fluent;
 
 namespace InheritDocLib
 {
@@ -36,6 +37,8 @@ namespace InheritDocLib
 
         const string TRIAL_TEXT = "running in free edition (only inheriting comments on types one level deep in type hierarchy from non-interface types), upgrade at https://www.inheritdoc.io/";
 
+        private static List<string> FileFullPaths = new();
+        
         /// <summary>
         /// Call to post process XML documentation files to replace &lt;inheritdoc/&gt; tags in XML comments (see https://www.inheritdoc.io)
         /// </summary>
@@ -77,6 +80,33 @@ namespace InheritDocLib
                 var newXmlDocFiles      = WriteNewAssemblyDocuments(assemblyDocuments, typeDocByName, overwriteExisting, logger);
                 var relativeXmlDocFiles = newXmlDocFiles.Select(x => FileX.MakeRelativePath(newBasePath, x));
                 if (logger != null) logger(LogLevel.Info, $"{count} <inheritdoc/> tag(s) replaced in {newXmlDocFiles.Count} XML documentation file(s) ({string.Join(",", relativeXmlDocFiles)})");
+
+
+                // Format XML files
+                foreach (var fileFullPath in FileFullPaths)
+                {
+                    logger?.Invoke(LogLevel.Info, $"Format {fileFullPath}");
+
+                    var xmlContent    = File.ReadAllText(fileFullPath);
+                    var parsedElement = XElement.Parse(xmlContent);
+                    var stringBuilder = new StringBuilder();
+
+                    var settings = new XmlWriterSettings
+                    {
+                        OmitXmlDeclaration = true,
+                        Indent             = true,
+                        IndentChars        = "    ",
+                    };
+
+                    using (var xmlWriter = XmlWriter.Create(stringBuilder, settings))
+                    {
+                        parsedElement.Save(xmlWriter);
+                    }
+
+                    File.WriteAllText(fileFullPath, stringBuilder.ToString());
+                }
+
+
                 return newXmlDocFiles;
             }
         }
@@ -203,7 +233,7 @@ namespace InheritDocLib
             {
                 try
                 {
-                  return XDocument.Load(streamReader, LoadOptions.PreserveWhitespace);
+                    return XDocument.Load(streamReader, LoadOptions.PreserveWhitespace);
                 }
                 catch (Exception e)
                 {
@@ -322,7 +352,6 @@ namespace InheritDocLib
 
                 foreach (var memberElement in typeDoc.memberElements.ToArray())
                 {
-                 
                     while (true)
                     {
                         var inheritDoc = memberElement.Descendants("inheritdoc").FirstOrDefault();
@@ -477,6 +506,9 @@ namespace InheritDocLib
                     foreach (var fileName in assemblyDocument.xmlDocFiles)
                     {
                         string newFileName = overwriteExisting ? fileName : fileName.Replace(".xml", ".new.xml");
+
+                        FileFullPaths.Add(newFileName);
+
                         using (var writer = new XmlTextWriter(newFileName, new UTF8Encoding(false)))
                         {
                             writer.Formatting  = Formatting.Indented;
@@ -488,6 +520,7 @@ namespace InheritDocLib
                     }
                 }
             }
+
 
             return result;
         }

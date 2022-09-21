@@ -28,20 +28,16 @@ namespace InheritDoc
                 }
             });
             
-            
             parserResult.WithParsed(options =>
             {
                 InheritDocUtil.Run(options.BasePath, options.XmlDocFileNamePatterns, options.GlobalSourceXmlFiles, options.ExcludeTypes, overwriteExisting: options.OverwriteExisting,
                     logger: Logger);
             });
 
-            // // ReSharper disable once UseObjectOrCollectionInitializer
             // Options options = new Options();
-            //
             // options.BasePath               = @"D:/Development/Projects/RiderProjects/broadcast-suite/Docs.DocGenerator/bin/Debug";
             // options.XmlDocFileNamePatterns = @"BroadcastSuite.*.xml";
             // options.OverwriteExisting      = false;
-            //
             // InheritDocUtil.Run(options.BasePath, options.XmlDocFileNamePatterns, options.GlobalSourceXmlFiles, options.ExcludeTypes, overwriteExisting: options.OverwriteExisting, logger: Logger);
         }
 
